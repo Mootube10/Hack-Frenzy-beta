@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firewall Frenzy</title>
+    <title>Hack Frenzy</title>
     <style>
         body {
             background-color: black;
@@ -78,7 +78,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background-image: url('https://i.ytimg.com/vi/ouJq0oevLIg/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-HYAC8BCKAgwIABABGDIgZSgyMA8=&rs=AOn4CLB5t5AGRaf4Uu39id0-tArVxk7KTQ'); /* Replace with your background URL */
+            background-image: url('https://static.vecteezy.com/system/resources/thumbnails/002/015/336/original/binary-code-with-numbers-moving-downward-on-screen-free-video.jpg'); /* Replace with your background URL */
             background-size: cover;
             background-position: center;
         }
@@ -91,7 +91,7 @@
     <button id="menu-btn" onclick="toggleMenu()">☰</button>
     <button id="store-btn" onclick="toggleStore()">Store</button>
     
-    <h1>🔥 Firewall Frenzy 🔥</h1>
+    <h1>🔥 Hack Frenzy 🔥</h1>
     <div id="game-container">
         <p id="instruction">Click Start to begin hacking...</p>
         <button onclick="startGame()">Start</button>
@@ -133,6 +133,8 @@
         let currentTask = "";
         let correctChoice = "";
         let points = 0;  // Keep track of available points
+        let timer;
+        let timeLeft = 0;
 
         function startGame() {
             document.getElementById("instruction").classList.add("hidden");
@@ -141,33 +143,39 @@
         }
 
         function nextMiniGame() {
+            // Stop the previous timer if it exists
+            if (timer) {
+                clearInterval(timer);
+            }
+
             let games = [
-                { type: "typing", task: "Type: HACK", answer: "HACK" },
-                { type: "typing", task: "Type: FIREWALL", answer: "FIREWALL" },
-                { type: "typing", task: "Type: BYPASS", answer: "BYPASS" },
-                { type: "typing", task: "Type: ACCESS", answer: "ACCESS" },
-                { type: "typing", task: "Type: ROOT", answer: "ROOT" },
-                { type: "choice", task: "Click the correct command!", options: ["ALLOW", "BLOCK"] },
-                { type: "choice", task: "Choose the right port!", options: ["8080", "443"] },
-                { type: "choice", task: "Click the secure option!", options: ["SSL", "PLAIN"] },
-                { type: "choice", task: "Click the encryption method!", options: ["AES", "NONE"] },
-                { type: "typing", task: "Type: ENCRYPT", answer: "ENCRYPT" },
-                { type: "typing", task: "Type: LOGIN", answer: "LOGIN" },
-                { type: "typing", task: "Type: DEBUG", answer: "DEBUG" },
-                { type: "choice", task: "Click the secure hash!", options: ["SHA256", "MD5"] },
-                { type: "typing", task: "Type: EXIT", answer: "EXIT" },
-                { type: "choice", task: "Click the correct protocol!", options: ["HTTPS", "HTTP"] },
-                { type: "typing", task: "Type: UPDATE", answer: "UPDATE" }            
+                { type: "typing", task: "Type: HACK", answer: "HACK", timer: 15 },
+                { type: "typing", task: "Type: FIREWALL", answer: "FIREWALL", timer: 15 },
+                { type: "typing", task: "Type: BYPASS", answer: "BYPASS", timer: 15 },
+                { type: "typing", task: "Type: ACCESS", answer: "ACCESS", timer: 15 },
+                { type: "typing", task: "Type: ROOT", answer: "ROOT", timer: 15 },
+                { type: "choice", task: "Click the correct command!", options: ["ALLOW", "BLOCK"], timer: 15 },
+                { type: "choice", task: "Choose the right port!", options: ["8080", "443"], timer: 15 },
+                { type: "choice", task: "Click the secure option!", options: ["SSL", "PLAIN"], timer: 15 },
+                { type: "choice", task: "Click the encryption method!", options: ["AES", "NONE"], timer: 15 },
+                { type: "typing", task: "Type: ENCRYPT", answer: "ENCRYPT", timer: 15 },
+                { type: "typing", task: "Type: LOGIN", answer: "LOGIN", timer: 15 },
+                { type: "typing", task: "Type: DEBUG", answer: "DEBUG", timer: 15 },
+                { type: "choice", task: "Click the secure hash!", options: ["SHA256", "MD5"], timer: 15 },
+                { type: "typing", task: "Type: EXIT", answer: "EXIT", timer: 15 },
+                { type: "choice", task: "Click the correct protocol!", options: ["HTTPS", "HTTP"], timer: 15 },
+                { type: "typing", task: "Type: UPDATE", answer: "UPDATE", timer: 15 }            
             ];
-            
+
             let game = games[Math.floor(Math.random() * games.length)];
             document.getElementById("game-task").innerText = game.task;
-            
+
             if (game.type === "typing") {
                 document.getElementById("user-input").classList.remove("hidden");
                 document.getElementById("choice1").classList.add("hidden");
                 document.getElementById("choice2").classList.add("hidden");
                 currentTask = game.answer;
+                startTimer(game.timer);
             } else {
                 document.getElementById("user-input").classList.add("hidden");
                 document.getElementById("choice1").classList.remove("hidden");
@@ -175,6 +183,7 @@
                 document.getElementById("choice1").innerText = game.options[0];
                 document.getElementById("choice2").innerText = game.options[1];
                 correctChoice = game.options[0];
+                startTimer(game.timer);
             }
         }
 
@@ -182,7 +191,10 @@
             if (event.key === "Enter") {
                 if (event.target.value.toUpperCase() === currentTask) {
                     score += 10 * multiplier;
-                    points += 10 * multiplier; // Add points based on multiplier
+                    points += 10 * multiplier;
+                    document.getElementById("score").innerText = "Score: " + score;
+                } else {
+                    score -= 5; // Penalty for error
                     document.getElementById("score").innerText = "Score: " + score;
                 }
                 event.target.value = "";
@@ -194,10 +206,28 @@
             let selected = document.getElementById("choice" + choice).innerText;
             if (selected === correctChoice) {
                 score += 10 * multiplier;
-                points += 10 * multiplier; // Add points based on multiplier
+                points += 10 * multiplier;
+                document.getElementById("score").innerText = "Score: " + score;
+            } else {
+                score -= 5; // Penalty for wrong choice
                 document.getElementById("score").innerText = "Score: " + score;
             }
             nextMiniGame();
+        }
+
+        function startTimer(seconds) {
+            timeLeft = seconds;
+            document.getElementById("game-task").innerText += " | Time left: " + timeLeft + "s";
+
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById("game-task").innerText = "Time left: " + timeLeft + "s";
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    nextMiniGame();
+                }
+            }, 1000);
         }
 
         function toggleMenu() {
@@ -210,14 +240,13 @@
             store.style.display = store.style.display === "none" || store.style.display === "" ? "block" : "none";
         }
 
-        // Function to handle buying multiplier
         function buyMultiplier() {
             if (points >= 10) {
                 points -= 10; // Deduct points for purchase
                 multiplier += 1; // Increase the multiplier
-                alert("Multiplier increased! Your new multiplier is: " + multiplier);
+                alert("Multiplier increased! New multiplier: " + multiplier);
             } else {
-                alert("Not enough points to purchase this upgrade.");
+                alert("Not enough points to buy multiplier.");
             }
         }
     </script>
