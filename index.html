@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firewall Frenzy</title>
+    <style>
+        body {
+            background-color: black;
+            color: lime;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        #game-container {
+            border: 2px solid lime;
+            padding: 20px;
+            width: 80%;
+            margin: auto;
+            margin-top: 50px;
+        }
+        .hidden { display: none; }
+        button {
+            background-color: lime;
+            color: black;
+            font-size: 18px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        #menu-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 24px;
+            background: none;
+            border: none;
+            color: lime;
+            cursor: pointer;
+        }
+        #menu-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 2px solid lime;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            display: none;
+        }
+        #store-btn {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+        }
+        #store-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: black;
+            border: 2px solid lime;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+            display: none;
+        }
+
+        /* Add background image */
+        #background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: url('https://i.ytimg.com/vi/ouJq0oevLIg/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-HYAC8BCKAgwIABABGDIgZSgyMA8=&rs=AOn4CLB5t5AGRaf4Uu39id0-tArVxk7KTQ'); /* Replace with your background URL */
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Layer -->
+    <div id="background"></div>
+
+    <button id="menu-btn" onclick="toggleMenu()">☰</button>
+    <button id="store-btn" onclick="toggleStore()">Store</button>
+    
+    <h1>🔥 Firewall Frenzy 🔥</h1>
+    <div id="game-container">
+        <p id="instruction">Click Start to begin hacking...</p>
+        <button onclick="startGame()">Start</button>
+        <div id="mini-game" class="hidden">
+            <p id="game-task"></p>
+            <input type="text" id="user-input" class="hidden" onkeydown="checkInput(event)">
+            <button id="choice1" class="hidden" onclick="checkChoice(1)"></button>
+            <button id="choice2" class="hidden" onclick="checkChoice(2)"></button>
+        </div>
+        <p id="score">Score: 0</p>
+    </div>
+
+    <div id="menu-container">
+        <h2>Menu</h2>
+        <button onclick="window.open('https://discord.gg/H4MHAKDzzT', '_blank')">Support (Discord)</button>
+        <br><br>
+        <button disabled>Under Development</button>
+        <br><br>
+        <button disabled>Under Development</button>
+        <br><br>
+        <button disabled>Under Development</button>
+        <br><br>
+        <button disabled>Under Development</button>
+        <br><br>
+        <button onclick="toggleMenu()">Close</button>
+    </div>
+
+    <div id="store-container">
+        <h2>Store</h2>
+        <p>Buy upgrades with points!</p>
+        <button onclick="buyMultiplier()">Increase Points Multiplier (10 points)</button>
+        <br><br>
+        <button onclick="toggleStore()">Close</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let multiplier = 1;
+        let currentTask = "";
+        let correctChoice = "";
+        let points = 0;  // Keep track of available points
+
+        function startGame() {
+            document.getElementById("instruction").classList.add("hidden");
+            document.getElementById("mini-game").classList.remove("hidden");
+            nextMiniGame();
+        }
+
+        function nextMiniGame() {
+            let games = [
+                { type: "typing", task: "Type: HACK", answer: "HACK" },
+                { type: "typing", task: "Type: FIREWALL", answer: "FIREWALL" },
+                { type: "typing", task: "Type: BYPASS", answer: "BYPASS" },
+                { type: "typing", task: "Type: ACCESS", answer: "ACCESS" },
+                { type: "typing", task: "Type: ROOT", answer: "ROOT" },
+                { type: "choice", task: "Click the correct command!", options: ["ALLOW", "BLOCK"] },
+                { type: "choice", task: "Choose the right port!", options: ["8080", "443"] },
+                { type: "choice", task: "Click the secure option!", options: ["SSL", "PLAIN"] },
+                { type: "choice", task: "Click the encryption method!", options: ["AES", "NONE"] },
+                { type: "typing", task: "Type: ENCRYPT", answer: "ENCRYPT" },
+                { type: "typing", task: "Type: LOGIN", answer: "LOGIN" },
+                { type: "typing", task: "Type: DEBUG", answer: "DEBUG" },
+                { type: "choice", task: "Click the secure hash!", options: ["SHA256", "MD5"] },
+                { type: "typing", task: "Type: EXIT", answer: "EXIT" },
+                { type: "choice", task: "Click the correct protocol!", options: ["HTTPS", "HTTP"] },
+                { type: "typing", task: "Type: UPDATE", answer: "UPDATE" }            
+            ];
+            
+            let game = games[Math.floor(Math.random() * games.length)];
+            document.getElementById("game-task").innerText = game.task;
+            
+            if (game.type === "typing") {
+                document.getElementById("user-input").classList.remove("hidden");
+                document.getElementById("choice1").classList.add("hidden");
+                document.getElementById("choice2").classList.add("hidden");
+                currentTask = game.answer;
+            } else {
+                document.getElementById("user-input").classList.add("hidden");
+                document.getElementById("choice1").classList.remove("hidden");
+                document.getElementById("choice2").classList.remove("hidden");
+                document.getElementById("choice1").innerText = game.options[0];
+                document.getElementById("choice2").innerText = game.options[1];
+                correctChoice = game.options[0];
+            }
+        }
+
+        function checkInput(event) {
+            if (event.key === "Enter") {
+                if (event.target.value.toUpperCase() === currentTask) {
+                    score += 10 * multiplier;
+                    points += 10 * multiplier; // Add points based on multiplier
+                    document.getElementById("score").innerText = "Score: " + score;
+                }
+                event.target.value = "";
+                nextMiniGame();
+            }
+        }
+
+        function checkChoice(choice) {
+            let selected = document.getElementById("choice" + choice).innerText;
+            if (selected === correctChoice) {
+                score += 10 * multiplier;
+                points += 10 * multiplier; // Add points based on multiplier
+                document.getElementById("score").innerText = "Score: " + score;
+            }
+            nextMiniGame();
+        }
+
+        function toggleMenu() {
+            let menu = document.getElementById("menu-container");
+            menu.style.display = menu.style.display === "none" || menu.style.display === "" ? "block" : "none";
+        }
+
+        function toggleStore() {
+            let store = document.getElementById("store-container");
+            store.style.display = store.style.display === "none" || store.style.display === "" ? "block" : "none";
+        }
+
+        // Function to handle buying multiplier
+        function buyMultiplier() {
+            if (points >= 10) {
+                points -= 10; // Deduct points for purchase
+                multiplier += 1; // Increase the multiplier
+                alert("Multiplier increased! Your new multiplier is: " + multiplier);
+            } else {
+                alert("Not enough points to purchase this upgrade.");
+            }
+        }
+    </script>
+</body>
+</html>
